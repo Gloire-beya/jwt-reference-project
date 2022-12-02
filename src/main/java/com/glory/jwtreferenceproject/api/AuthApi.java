@@ -17,10 +17,13 @@ import javax.validation.Valid;
 
 @RestController
 public class AuthApi {
-    @Autowired
-    private AuthenticationManager authManager;
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final AuthenticationManager authManager;
+    private final JwtTokenUtil jwtTokenUtil;
+
+    public AuthApi(AuthenticationManager authManager, JwtTokenUtil jwtTokenUtil) {
+        this.authManager = authManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody @Valid AuthRequest request) {

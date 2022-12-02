@@ -20,10 +20,13 @@ import javax.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private JwtTokenFilter jwtTokenFilter;
+    private final UserRepository userRepository;
+    private final JwtTokenFilter jwtTokenFilter;
+
+    public ApplicationSecurityConfig(UserRepository userRepository, JwtTokenFilter jwtTokenFilter) {
+        this.userRepository = userRepository;
+        this.jwtTokenFilter = jwtTokenFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
