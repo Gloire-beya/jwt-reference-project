@@ -4,6 +4,7 @@ In this project, I've developed secure REST APIs with Spring Security and JSON W
 - JWT
 - Spring Security Filters chain
 - Spring Boot application that exposes some APIs secured by JWT
+- Authentication as well as role-based Authorization with JWT
 
 Technologies:
 - Spring Web
