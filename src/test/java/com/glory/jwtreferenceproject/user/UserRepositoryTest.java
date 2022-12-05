@@ -22,10 +22,21 @@ class UserRepositoryTest {
 
     @Test
     public void createUser() {
-        User user = new User("gloire@gmail.com", passwordEncoder.encode("gloire1234"));
+        User user = new User("tebo@gmail.com", passwordEncoder.encode("tebo1234"));
         User savedUser = userRepository.save(user);
         assert savedUser.getId() > 0;
         assert savedUser.getEmail() != null;
+    }
+
+    @Test
+    public void assignRoleToUser() {
+        Integer userId = 3;
+
+        User user = userRepository.findById(userId).get();
+        user.addRole(new Role(3));
+
+        User savedUser = userRepository.save(user);
+        assert savedUser.getRoles().size() == 1;
     }
 
 }

@@ -1,7 +1,8 @@
 package com.glory.jwtreferenceproject.jwt;
 
+import com.glory.jwtreferenceproject.user.Role;
 import com.glory.jwtreferenceproject.user.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.jsonwebtoken.Claims;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,16 +42,31 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private void setAuthenticationContext(String accessToken, HttpServletRequest request) {
         UserDetails userDetails = getUserDetails(accessToken);
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, null);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private UserDetails getUserDetails(String accessToken) {
         User userDetails = new User();
+        Claims claims = jwtTokenUtil.parseClaims(accessToken);
+
+        String claimRoles = (String) claims.get("roles");
+        String[] rolesArray = claimRoles
+                .replace("[", "")
+                .replace("]", "")
+                .split(",");
+
+        for (String role : rolesArray){
+            userDetails.addRole(new Role(role));
+        }
+
+        String subject = (String) claims.get(Claims.SUBJECT);
         String[] subjectArray = jwtTokenUtil.getSubject(accessToken).split(",");
+
         userDetails.setId(Integer.parseInt(subjectArray[0]));
         userDetails.setEmail(subjectArray[1]);
+
         return userDetails;
     }
 
@@ -61,8 +77,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private String getAccessToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        String token = header.split(" ")[1].trim();
-        System.out.println("Access token: " + token);
-        return token;
+        return header.split(" ")[1].trim();
     }
 }

@@ -18,11 +18,12 @@ public class JwtTokenUtil {
 
     public String generateAccessToken(User user) {
         return Jwts.builder()
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
-                .setIssuedAt(new Date())
                 .setSubject(user.getId() + "," + user.getEmail())
-                .signWith(SignatureAlgorithm.HS512, secretKey)
                 .setIssuer("Gloire")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
+                .claim("roles", user.getRoles().toString())
+                .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
 
@@ -48,7 +49,7 @@ public class JwtTokenUtil {
         return parseClaims(token).getSubject();
     }
 
-    private Claims parseClaims(String token) {
+    public Claims parseClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
